@@ -150,7 +150,13 @@ private[sql] class DiskPartition (
        */
       private[this] def fetchNextChunk(): Boolean = {
         // IMPLEMENT ME
-        false
+        if(chunkSizeIterator.hasNext){
+          byteArray = getNextChunkBytes(inStream, chunkSizeIterator.next(), byteArray)
+          true
+        }
+        else{
+          false
+        }
       }
     }
   }
@@ -164,6 +170,7 @@ private[sql] class DiskPartition (
    */
   def closeInput() = {
     // IMPLEMENT ME
+    outStream.close()
     inputClosed = true
   }
 
@@ -201,6 +208,7 @@ private[sql] object DiskHashedRelation {
                 size: Int = 64,
                 blockSize: Int = 64000) = {
     // IMPLEMENT ME
+    
     null
   }
 }
