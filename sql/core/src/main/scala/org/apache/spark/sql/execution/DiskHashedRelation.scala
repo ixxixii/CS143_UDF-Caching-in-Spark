@@ -76,7 +76,7 @@ private[sql] class DiskPartition (
   def insert(row: Row) = {
     // IMPLEMENT ME
     if(inputClosed) {
-      throw new SparkException("Input closed.")      
+      throw new SparkException("Input already closed!")      
     }
 
     data.add(row)
@@ -127,7 +127,7 @@ private[sql] class DiskPartition (
 
       override def next() = {
         // IMPLEMENT ME
-        currentIterator.next()
+        currentIterator.next() 
       }
 
       override def hasNext() = {
