@@ -37,21 +37,20 @@ protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPart
 
   override def getIterator() = {
     // IMPLEMENT ME
-    if(partitions != null){
+    if(partitions != null) {
       val templist: JavaArrayList[DiskPartition] = new JavaArrayList[DiskPartition]()
-      for(temp <- partitions){
+      for(temp <- partitions) {
         templist.add(temp)
       }
       templist.iterator().asScala
-    }
-    else{
+    } else {
       null
     }
   }
 
   override def closeAllPartitions() = {
     // IMPLEMENT ME
-    for(temp <- partitions){
+    for(temp <- partitions) {
       temp.closePartition()
     }
   }
@@ -76,11 +75,12 @@ private[sql] class DiskPartition (
    */
   def insert(row: Row) = {
     // IMPLEMENT ME
-    if(inputClosed){
-      throw new SparkException("Input closed.")
+    if(inputClosed) {
+      throw new SparkException("Input closed.")      
     }
+
     data.add(row)
-    if(measurePartitionSize() > blockSize){
+    if(measurePartitionSize() > blockSize) {
       spillPartitionToDisk()
       data.clear()
     }
@@ -132,12 +132,12 @@ private[sql] class DiskPartition (
 
       override def hasNext() = {
         // IMPLEMENT ME
-        if(currentIterator.hasNext){
+        if(currentIterator.hasNext) {
           true
-        }else if(writtenToDisk && fetchNextChunk()){
+        } else if(writtenToDisk && fetchNextChunk()){
           currentIterator = getListFromBytes(byteArray).iterator.asScala
           true
-        }else{
+        } else {
           false
         }
       }
@@ -150,11 +150,10 @@ private[sql] class DiskPartition (
        */
       private[this] def fetchNextChunk(): Boolean = {
         // IMPLEMENT ME
-        if(chunkSizeIterator.hasNext){
+        if(chunkSizeIterator.hasNext) {
           byteArray = getNextChunkBytes(inStream, chunkSizeIterator.next(), byteArray)
           true
-        }
-        else{
+        } else {
           false
         }
       }
@@ -171,7 +170,7 @@ private[sql] class DiskPartition (
   def closeInput() = {
     // IMPLEMENT ME
     outStream.close()
-    inputClosed = true
+    inputClosed = true    
   }
 
 
@@ -208,21 +207,22 @@ private[sql] object DiskHashedRelation {
                 size: Int = 64,
                 blockSize: Int = 64000) = {
     // IMPLEMENT ME
-    if(size != 0 && input != null){
+    if(size != 0 && input != null) {
       var partitions: Array[DiskPartition] = new Array[DiskPartition](size)
-      for(i <- 0 to (size - 1)){
+      for(i <- 0 to (size - 1)) {
         partitions(i) = new DiskPartition("test" + i, blockSize)
       }
-      for(temp <- input){
+
+      for(temp <- input) {
         var pjrow = keyGenerator(temp)
         partitions(pjrow.hashCode() % size).insert(temp)
       }
-      for(temp <- partitions){
+
+      for(temp <- partitions) {
         temp.closeInput()
       }
       new GeneralDiskHashedRelation(partitions)
-    }
-    else{
+    } else {
       null
     }
   }
