@@ -37,7 +37,16 @@ protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPart
 
   override def getIterator() = {
     // IMPLEMENT ME
-    null
+    if(partitions != null){
+      val templist: JavaArrayList[DiskPartition] = new JavaArrayList[DiskPartition]()
+      for(temp <- partitions){
+        templist.add(temp)
+      }
+      templist.iterator().asScala
+    }
+    else{
+      null
+    }
   }
 
   override def closeAllPartitions() = {
