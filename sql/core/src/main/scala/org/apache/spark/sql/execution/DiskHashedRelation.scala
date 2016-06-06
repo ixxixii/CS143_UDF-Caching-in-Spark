@@ -137,14 +137,7 @@ private[sql] class DiskPartition (
 
       override def hasNext() = {
         // IMPLEMENT ME
-        if(currentIterator.hasNext) {
-          true
-        } else if(writtenToDisk && fetchNextChunk()){
-          currentIterator = getListFromBytes(byteArray).iterator.asScala
-          true
-        } else {
-          false
-        }
+        currentIterator.hasNext || chunkSizeIterator.hasNext
       }
 
       /**
