@@ -208,7 +208,22 @@ private[sql] object DiskHashedRelation {
                 size: Int = 64,
                 blockSize: Int = 64000) = {
     // IMPLEMENT ME
-    
-    null
+    if(size != 0 && input != null){
+      var partitions: Array[DiskPartition] = new Array[DiskPartition](size)
+      for(i <- 0 to (size - 1)){
+        partitions(i) = new DiskPartition("test" + i, blockSize)
+      }
+      for(temp <- input){
+        var pjrow = keyGenerator(temp)
+        partitions(pjrow.hashCode() % size).insert(temp)
+      }
+      for(temp <- partitions){
+        temp.closeInput()
+      }
+      new GeneralDiskHashedRelation(partitions)
+    }
+    else{
+      null
+    }
   }
 }
