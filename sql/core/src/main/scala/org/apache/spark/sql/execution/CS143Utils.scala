@@ -194,11 +194,7 @@ object CachingIteratorGenerator {
 
         def hasNext() = {
           // IMPLEMENT ME
-          if(input.hasNext) {
-            true
-          } else{
-            false
-          }
+          input.hasNext
         }
 
         def next() = {
