@@ -37,7 +37,15 @@ protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPart
 
   override def getIterator() = {
     // IMPLEMENT ME
-    partitions.iterator
+    if(partitions != null) {
+      val templist: JavaArrayList[DiskPartition] = new JavaArrayList[DiskPartition]()
+      for(temp <- partitions) {
+        templist.add(temp)
+      }
+      templist.iterator().asScala
+    } else {
+      null
+    }
   }
 
   override def closeAllPartitions() = {
@@ -119,20 +127,7 @@ private[sql] class DiskPartition (
 
       override def next() = {
         // IMPLEMENT ME
-        if (currentIterator.hasNext){
-          currentIterator.next()
-        }
-        else if (chunkSizeIterator.hasNext) {
-          if (fetchNextChunk()) {
-            currentIterator.next()
-          }
-          else {
-            null
-          }
-        }
-        else {
-          null
-        }
+        currentIterator.next()
       }
 
       override def hasNext() = {
@@ -168,13 +163,8 @@ private[sql] class DiskPartition (
    */
   def closeInput() = {
     // IMPLEMENT ME
-    if (data.size() > 0) {
-      spillPartitionToDisk()
-      data.clear()
-    }
-    outStream.flush()
-    outStream.close()
-    inputClosed = true    
+    outStream.close() 
+    inputClosed = true
   }
 
 
@@ -211,7 +201,7 @@ private[sql] object DiskHashedRelation {
                 size: Int = 64,
                 blockSize: Int = 64000) = {
     // IMPLEMENT ME
-        if (input.hasNext) {
+      if (input.hasNext) {
       var row: Row = null
       val partitions: Array[DiskPartition] = new Array[DiskPartition](size)
       for (i <- 0 to size-1) {
@@ -231,3 +221,4 @@ private[sql] object DiskHashedRelation {
     }
   }
 }
+
