@@ -51,6 +51,9 @@ protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPart
 
   override def closeAllPartitions() = {
     // IMPLEMENT ME
+    for(temp <- partitions){
+      temp.closePartition()
+    }
   }
 }
 
@@ -73,6 +76,14 @@ private[sql] class DiskPartition (
    */
   def insert(row: Row) = {
     // IMPLEMENT ME
+    if(inputClosed){
+      throw new SparkException("Input closed already.")
+    }
+    data.add(row)
+    if(measurePartitionSize() > blockSize){
+      spillPartitionToDisk()
+      data.clear()
+    }
   }
 
   /**
